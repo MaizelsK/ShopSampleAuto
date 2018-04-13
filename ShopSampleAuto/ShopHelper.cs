@@ -38,6 +38,20 @@ namespace ShopSampleAuto
             sellers.Columns["id"].AutoIncrement = true;
             sellers.PrimaryKey = new DataColumn[] { sellers.Columns["id"] };
 
+            // Создание продуктов
+            DataTable products = new DataTable("Products");
+            products.Columns.AddRange(new DataColumn[]
+            {
+                new DataColumn("id", typeof(int)),
+                new DataColumn("name", typeof(string)),
+                new DataColumn("description", typeof(string)),
+                new DataColumn("price", typeof(decimal)),
+                new DataColumn("createDate", typeof(DateTime))
+            });
+            products.Columns["id"].AutoIncrement = true;
+            products.Columns["createDate"].DefaultValue = DateTime.Now;
+            products.PrimaryKey = new DataColumn[] { products.Columns["id"] };
+
             // Таблица заказов
             DataTable orders = new DataTable("Orders");
             orders.Columns.AddRange(new DataColumn[]
@@ -45,7 +59,7 @@ namespace ShopSampleAuto
                 new DataColumn("id", typeof(int)),
                 new DataColumn("idCustomer", typeof(int)),
                 new DataColumn("idSeller", typeof(int)),
-                new DataColumn("price", typeof(decimal)),
+                new DataColumn("idProduct", typeof(int)),
                 new DataColumn("orderDate", typeof(DateTime))
             });
             orders.Columns["id"].AutoIncrement = true;
@@ -53,13 +67,15 @@ namespace ShopSampleAuto
             orders.PrimaryKey = new DataColumn[] { orders.Columns["id"] };
 
             // Создание ограничений
-            shopDb.Tables.AddRange(new DataTable[] { customers, sellers, orders });
+            shopDb.Tables.AddRange(new DataTable[] { customers, sellers, orders, products });
             shopDb.Relations.AddRange(new DataRelation[]
             {
                 new DataRelation("FK_ORDERS_IDCUSTOMERS", customers.Columns["id"],
                                                         orders.Columns["idCustomer"]),
                 new DataRelation("FK_ORDERS_IDSELLERS", sellers.Columns["id"],
                                                         orders.Columns["idSeller"]),
+                new DataRelation("FK_ORDERS_IDPRODUCT", products.Columns["id"],
+                                                        orders.Columns["idProduct"]),
             });
 
             return shopDb;
